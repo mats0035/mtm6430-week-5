@@ -11,11 +11,12 @@
 <script>
 import Todo from "@/components/Todo.vue";
 import TodoForm from "@/components/TodoForm.vue";
-
-export default {
+import axios from "axios";
+export default { 
   data () {
     return {
-      todoList: ["Walk the dog", "Go for a ride"]
+      // todoList: ["Walk the dog", "Go for a ride"]
+      todoList: []
     };
   },
   components: {
@@ -25,11 +26,33 @@ export default {
   methods: {
     appDeleteTodo(index) {
       // 1はいくつのアイテムを消すかを指定している
-      this.todoList.splice(index, 1)
+      this.todoList.splice(index, 1);
+      axios.put("https://mats0035-vue-and-axios.firebaseio.com/data.json", this.todoList);
     },
     addTodo(todo) {
-      this.todoList.push(todo)
+      this.todoList.push(todo);
+      axios
+      // get, pushも使える
+      .put("https://mats0035-vue-and-axios.firebaseio.com/data.json", this.todoList)
+      // then, catchはオプショナル
+      .then(response => {
+        console.log("Your data was saved status: " + response.status)
+      })
+      .catch(errors => {
+        console.log(error);
+      })
     }
+  },
+  created() {
+    axios
+    .get("https://mats0035-vue-and-axios.firebaseio.com/data.json")
+    .then(response => {
+      console.log(response.data);
+      if(response.data)this.todoList = response.data;
+    })
+    .catch(error => {
+      console.log("There was an error in getting data: " + error.response);
+    });
   }
 };
 </script>
